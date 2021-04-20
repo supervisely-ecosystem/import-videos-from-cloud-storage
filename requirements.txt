@@ -1,0 +1,2 @@
+supervisely==6.1.65
+google-cloud-storage==1.37.1

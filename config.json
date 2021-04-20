@@ -1,0 +1,20 @@
+{
+  "name": "ImgAug Studio",
+  "type": "app",
+  "categories": [
+    "augmentations",
+    "images"
+  ],
+  "description": "Visualize and build augmentation pipeline with ImgAug",
+  "docker_image": "supervisely/base-py-sdk:6.1.64",
+  "main_script": "src/main.py",
+  "gui_template": "src/gui.html",
+  "task_location": "workspace_tasks",
+  "icon": "https://img.icons8.com/fluent/100/000000/lab-items.png",
+  "icon_background": "#FFFFFF",
+  "disable_stop": true,
+  "context_menu": {
+    "target": ["images_project"]
+  },
+  "instance_version": "6.4.10"
+}
