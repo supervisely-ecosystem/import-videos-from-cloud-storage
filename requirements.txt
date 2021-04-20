@@ -1,2 +1,4 @@
 supervisely==6.1.65
 google-cloud-storage==1.37.1
+google-resumable-media==1.2.0
+hurry.filesize==0.9

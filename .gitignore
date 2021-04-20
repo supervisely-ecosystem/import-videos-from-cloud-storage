@@ -1,4 +1,5 @@
 secret_debug.env
+gcs_debug_creds.json
 .idea
 venv
 supervisely_lib
