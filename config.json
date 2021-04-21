@@ -1,16 +1,15 @@
 {
-  "name": "ImgAug Studio",
+  "name": "Import videos from cloud",
   "type": "app",
   "categories": [
-    "augmentations",
-    "images"
+    "import"
   ],
-  "description": "Visualize and build augmentation pipeline with ImgAug",
-  "docker_image": "supervisely/base-py-sdk:6.1.64",
+  "description": "Import videos from cloud (GCS, AWS, ...)",
+  "docker_image": "supervisely/base-py-sdk:6.1.67",
   "main_script": "src/main.py",
   "gui_template": "src/gui.html",
   "task_location": "workspace_tasks",
-  "icon": "https://img.icons8.com/fluent/100/000000/lab-items.png",
+  "icon": "https://i.imgur.com/dAeEkoO.png",
   "icon_background": "#FFFFFF",
   "disable_stop": true,
   "context_menu": {
