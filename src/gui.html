@@ -1,6 +1,14 @@
 <div id="import-videos-gcs">
-<!--    <sly-file-viewer :list="data.tree" v-model="state.selected" />-->
     <sly-card title="Remote data"
               subtitle="Select folders and/or files that should be imported">
+        <sly-field title="Bucket name" description="paste bucket name to preview its files">
+            <div class="fflex">
+                <el-input v-model="state.bucketName" class="mr10"></el-input>
+                <el-button class="regular" type="primary" @click="command('preview')">Preview bucket</el-button>
+            </div>
+        </sly-field>
+        <sly-field v-if="data.tree" title="Preview files" description="Use double click to step into directory" >
+            <sly-file-viewer :list="data.tree" v-model="state.selected" />
+        </sly-field>
     </sly-card>
 </div>
