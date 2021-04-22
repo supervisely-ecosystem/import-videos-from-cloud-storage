@@ -3,6 +3,10 @@
               subtitle="Connect to bucket">
         <sly-field title="Bucket name" description="paste bucket name to preview its files">
             <div class="fflex">
+                <el-select v-model="value" placeholder="Select">
+                    <el-option key="azure" label="azure" value="azure">
+                    </el-option>
+                </el-select>
                 <el-input v-model="state.bucketName" class="mr10"></el-input>
                 <el-button
                         class="regular" type="primary"
@@ -46,8 +50,20 @@
         <sly-field title="Result project"
                    description="Define destination project and dataset">
             <div class="fflex">
-                <el-radio class="radio" v-model="state.dstProjectMode" label="newProject">Create new project</el-radio>
-                <el-radio class="radio" v-model="state.dstProjectMode" label="existingProject">Add to existing project</el-radio>
+
+                <el-radio class="radio"
+                          v-model="state.dstProjectMode"
+                          label="newProject"
+                          @input="(val) => {
+                            if (val === 'newProject') {
+                                state.dstDatasetMode = 'newDataset';
+                            }
+                          }"
+                >
+                    Create new project
+                </el-radio>
+                <el-radio class="radio" v-model="state.dstProjectMode" label="existingProject">Add to existing project
+                </el-radio>
             </div>
             <div class="mt5">
                 <div v-if="state.dstProjectMode === 'newProject'">
@@ -69,7 +85,12 @@
                     -> import them to another dataset, and so on ...">
             <div class="fflex">
                 <el-radio class="radio" v-model="state.dstDatasetMode" label="newDataset">Create new dataset</el-radio>
-                <el-radio class="radio" v-model="state.dstDatasetMode" label="existingDataset">Add to existing dataset</el-radio>
+                <el-radio class="radio"
+                          v-model="state.dstDatasetMode"
+                          label="existingDataset"
+                          :disabled="state.dstProjectMode === 'newProject'">
+                    Add to existing dataset
+                </el-radio>
             </div>
             <div class="mt5">
                 <div v-if="state.dstDatasetMode === 'newDataset'">

@@ -44,5 +44,6 @@ def main():
 
 
 #@TODO: set correct instance_version
+# https://docs.supervise.ly/enterprise-edition/advanced-tuning/s3#links-plugin-cloud-providers-support
 if __name__ == "__main__":
     sly.main_wrapper("main", main)
