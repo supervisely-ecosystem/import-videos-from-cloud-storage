@@ -1,30 +1,32 @@
 <div id="import-videos-gcs">
-    <sly-card title="1. Check connection"
-              subtitle="Connect to bucket">
-        <sly-field title="Bucket name" description="paste bucket name to preview its files">
-            <div class="fflex">
-                <el-select v-model="value" placeholder="Select">
-                    <el-option key="azure" label="azure" value="azure">
-                    </el-option>
+    <sly-card title="1. Connect to the cloud storage"
+              subtitle="Choose cloud service provider and bucket name">
+        <div class="fflex">
+            <sly-field title="Provider" style="margin: 0 10px 0 0;">
+                <el-select v-model="state.provider" placeholder="Select cloud provider">
+                    <el-option key="google" label="google cloud storage" value="google"></el-option>
+                    <el-option key="amazon" label="amazon s3" value="s3"></el-option>
+                    <el-option key="azure" label="azure storage" value="azure"></el-option>
                 </el-select>
+            </sly-field>
+            <sly-field title="Bucket name" style="flex: 1; margin: 0 10px 0 0;">
                 <el-input v-model="state.bucketName" class="mr10"></el-input>
-                <el-button
-                        class="regular" type="primary"
-                        :disabled="state.bucketName.length === 0"
-                        @click="command('preview')"
-                >Preview bucket
-                </el-button>
-            </div>
-        </sly-field>
+            </sly-field>
+            <el-button
+                    class="regular" type="primary"
+                    style="align-self: flex-end;"
+                    :disabled="state.bucketName.length === 0"
+                    @click="command('preview')">
+                <i class="zmdi zmdi-cloud mr5"></i> Connect
+            </el-button>
+        </div>
     </sly-card>
 
-    <sly-card v-show="data.tree"
+    <sly-card v-if="data.tree"
               class="mt10"
               title="2. Preview bucket and select items"
               subtitle="All selected video/directories will be imported">
-        <sly-field v-if="data.tree" title="Preview files" description="Use double click to step into directory">
-            <sly-file-viewer :list="data.tree" v-model="state.selected"/>
-        </sly-field>
+        <sly-file-viewer :list="data.tree" v-model="state.selected"/>
     </sly-card>
 
     <sly-card v-show="state.selected.length > 0"
@@ -107,8 +109,5 @@
             </div>
         </sly-field>
     </sly-card>
-    <div>{{state.dstDatasetId}}</div>
-    <div>{{context}}</div>
-
 
 </div>

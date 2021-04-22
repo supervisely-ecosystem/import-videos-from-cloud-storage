@@ -6,8 +6,9 @@ def init_context(data, team_id, workspace_id):
     data["workspaceId"] = workspace_id
 
 
-def init_bucket_preview(data, state):
-    state["bucketName"] = ""
+def init_connection(data, state):
+    state["provider"] = "google"
+    state["bucketName"] = "surgar-bigdata-bucket-01" #@TODO: for debug ""
     state["selected"] = ""
     data["tree"] = None
 

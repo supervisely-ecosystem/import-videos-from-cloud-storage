@@ -15,16 +15,26 @@ workspace_id = int(os.environ['context.workspaceId'])
 @app.callback("preview")
 @sly.timeit
 def preview(api: sly.Api, task_id, context, state, app_logger):
-    def filter(path):
-        return False if "/venv" in path else True
+    path = f"{state['provider']}://{state['bucketName']}"
+    try:
+        files = api.remote_storage.list(path)
+    except Exception as e:
+        # @TODO: connection dialog message
+        pass
 
-    files = sly.fs.list_files_recursively(app_sources_dir, filter_fn=filter)
+
+    # def filter(path):
+    #     return False if "/venv" in path else True
+    # files = sly.fs.list_files_recursively(app_sources_dir, filter_fn=filter)
 
     tree_items = []
     for file in files:
+        path = os.path.join(f"/{state['bucketName']}", file["prefix"], file["name"])
+        # if file["type"] == "folder":
+        #     path += "/"
         tree_items.append({
-            "path": file,
-            "size": 1234
+            "path": os.path.join(f"/{state['bucketName']}", file["prefix"], file["name"]),
+            "size": file["size"]
         })
     fields = [
         {"field": "data.tree", "payload": tree_items},
@@ -37,7 +47,7 @@ def main():
     state = {}
 
     ui.init_context(data, team_id, workspace_id)
-    ui.init_bucket_preview(data, state)
+    ui.init_connection(data, state)
     ui.init_options(data, state)
 
     app.run(data=data, state=state)
