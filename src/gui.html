@@ -29,8 +29,6 @@
         <sly-file-viewer :list="data.tree" v-model="state.selected"/>
     </sly-card>
 
-    <div>{{state.selected}}</div>
-
     <sly-card v-show="state.selected.length > 0"
               class="mt10"
               title="3. Import settings"
@@ -110,8 +108,19 @@
                 </div>
             </div>
         </sly-field>
+        <sly-field v-if="state.addMode === 'addBylink'"
+                   title="Notice: you chose to add remote files by link without actual data copying"
+                   description="The app downloads video just once to preprocess and extract meta information,
+                   for example, frame mapping. Then video file is removed from temp folder and from now
+                   Supervisely will stream it from your connected cloud storage directly to browser. If use see that
+                   video lags in browser, let us know.">
+            <!--                color: '#20a0ff', bgColor: '#daecff'-->
+            <sly-icon slot="icon" :options="{ color: '#fba607', bgColor: '#ffe9da', rounded: false }">
+                <i class="zmdi zmdi-info"></i>
+            </sly-icon>
+        </sly-field>
         <el-button
-                class="regular" type="primary"
+                class="regular mr10" type="primary"
                 style="align-self: flex-end;"
                 :disabled="state.processing === true"
                 @click="data.processing=true; command('process')">
