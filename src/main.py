@@ -81,7 +81,7 @@ def main():
 
 #@TODO: set correct instance_version
 #@TODO: TONY - fix arguments description in docs remote-storage.bulk.download
-#@TODO: TONY - check that order is preserved remote-storage.bulk.download
+#@TODO: download from cloud API - not working
 # https://docs.supervise.ly/enterprise-edition/advanced-tuning/s3#links-plugin-cloud-providers-support
 if __name__ == "__main__":
     sly.main_wrapper("main", main)
