@@ -1,15 +1,93 @@
 <div id="import-videos-gcs">
-    <sly-card title="Remote data"
-              subtitle="Select folders and/or files that should be imported">
+    <sly-card title="1. Check connection"
+              subtitle="Connect to bucket">
         <sly-field title="Bucket name" description="paste bucket name to preview its files">
             <div class="fflex">
                 <el-input v-model="state.bucketName" class="mr10"></el-input>
-                <el-button class="regular" type="primary" @click="command('preview')">Preview bucket</el-button>
+                <el-button
+                        class="regular" type="primary"
+                        :disabled="state.bucketName.length === 0"
+                        @click="command('preview')"
+                >Preview bucket
+                </el-button>
             </div>
         </sly-field>
+    </sly-card>
 
-        <sly-field v-if="data.tree" title="Preview files" description="Use double click to step into directory" >
-            <sly-file-viewer :list="data.tree" v-model="state.selected" />
+    <sly-card v-show="data.tree"
+              class="mt10"
+              title="2. Preview bucket and select items"
+              subtitle="All selected video/directories will be imported">
+        <sly-field v-if="data.tree" title="Preview files" description="Use double click to step into directory">
+            <sly-file-viewer :list="data.tree" v-model="state.selected"/>
         </sly-field>
     </sly-card>
+
+    <sly-card v-show="state.selected.length > 0"
+              class="mt10"
+              title="3. Import settings"
+              subtitle="Configure data copying and destination project">
+        <sly-field title="Data duplication"
+                   description="Choose whether data should be copied to internal Supervisely Storage or just added by link">
+            <div class="fflex" style="flex-direction: column; align-items: flex-start">
+                <el-radio class="radio"
+                          v-model="state.addMode"
+                          label="copyData">
+                    Copy file from cloud to Supervisely Storage
+                </el-radio>
+                <el-radio class="radio mt5"
+                          v-model="state.addMode"
+                          label="addBylink"
+                          style="margin-left: 0;">
+                    Keep file only in the cloud without duplication, add to Supervisely Storage by link
+                </el-radio>
+            </div>
+        </sly-field>
+        <sly-field title="Result project"
+                   description="Define destination project and dataset">
+            <div class="fflex">
+                <el-radio class="radio" v-model="state.dstProjectMode" label="newProject">Create new project</el-radio>
+                <el-radio class="radio" v-model="state.dstProjectMode" label="existingProject">Add to existing project</el-radio>
+            </div>
+            <div class="mt5">
+                <div v-if="state.dstProjectMode === 'newProject'">
+                    <el-input placeholder="Please input project name" v-model="state.dstProjectName"></el-input>
+                </div>
+                <div v-if="state.dstProjectMode === 'existingProject'">
+                    <sly-select-project
+                            :workspace-id="data.workspaceId"
+                            :project-id.sync="state.dstProjectId"
+                            :options="{showLabel: false}"
+                    >
+                    </sly-select-project>
+                </div>
+            </div>
+        </sly-field>
+        <sly-field title="Result dataset"
+                   description="All selected items will be placed to a single dataset. To create multiple datasets for
+                   different subsets of selected items do the following: select items -> import to one dataset, then select another items
+                    -> import them to another dataset, and so on ...">
+            <div class="fflex">
+                <el-radio class="radio" v-model="state.dstDatasetMode" label="newDataset">Create new dataset</el-radio>
+                <el-radio class="radio" v-model="state.dstDatasetMode" label="existingDataset">Add to existing dataset</el-radio>
+            </div>
+            <div class="mt5">
+                <div v-if="state.dstDatasetMode === 'newDataset'">
+                    <el-input placeholder="Please input dataset name" v-model="state.dstDatasetName"></el-input>
+                </div>
+                <div v-if="state.dstDatasetMode === 'existingDataset'">
+                    <sly-select-dataset
+                            :project-id="state.dstProjectId"
+                            :datasets.sync="state.dstDatasetId"
+                            :options="{showLabel: false}"
+                    >
+                    </sly-select-dataset>
+                </div>
+            </div>
+        </sly-field>
+    </sly-card>
+    <div>{{state.dstDatasetId}}</div>
+    <div>{{context}}</div>
+
+
 </div>

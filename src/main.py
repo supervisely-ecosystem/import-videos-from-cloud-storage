@@ -36,7 +36,9 @@ def main():
     data = {}
     state = {}
 
+    ui.init_context(data, team_id, workspace_id)
     ui.init_bucket_preview(data, state)
+    ui.init_options(data, state)
 
     app.run(data=data, state=state)
 
