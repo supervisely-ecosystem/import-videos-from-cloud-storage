@@ -29,6 +29,8 @@
         <sly-file-viewer :list="data.tree" v-model="state.selected"/>
     </sly-card>
 
+    <div>{{state.selected}}</div>
+
     <sly-card v-show="state.selected.length > 0"
               class="mt10"
               title="3. Import settings"
@@ -108,6 +110,13 @@
                 </div>
             </div>
         </sly-field>
+        <el-button
+                class="regular" type="primary"
+                style="align-self: flex-end;"
+                :disabled="state.processing === true"
+                @click="data.processing=true; command('process')">
+            <i class="zmdi zmdi-play mr5"></i> Start import
+        </el-button>
     </sly-card>
 
 </div>

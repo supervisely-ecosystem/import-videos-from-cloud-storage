@@ -22,3 +22,5 @@ def init_options(data, state):
     state["dstDatasetMode"] = "newDataset"
     state["dstDatasetName"] = "my_dataset"
     state["dstDatasetId"] = None
+
+    data["processing"] = False
