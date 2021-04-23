@@ -92,6 +92,9 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         progress = sly.Progress("Downloading to temp dir: {!r} ".format(temp_path), file_size[temp_path], is_size=True)
         api.remote_storage.download_path(remote_path, local_path, progress.iters_done_report)
 
+    if state["dstProjectMode"] == "newProject":
+        api.project.create(workspace_id, state[""])
+
 
 def main():
     data = {}
@@ -105,7 +108,10 @@ def main():
 
     app.run(data=data, state=state)
 
-
+#@TODO: filter project - keep only video projects (update widget sly-project-selector)
+#@TODO: add error text if destination dataset/project is not defined
+#@TODO: release new SDK and change ersion in config
+#@TODO: progres bars
 #@TODO: set correct instance_version
 #@TODO: TONY - fix arguments description in docs remote-storage.bulk.download
 #@TODO: download from cloud API - not working

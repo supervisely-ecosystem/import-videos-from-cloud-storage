@@ -122,7 +122,11 @@
         <el-button
                 class="regular mr10" type="primary"
                 style="align-self: flex-end;"
-                :disabled="data.processing === true"
+                :disabled="data.processing === true ||
+                           (state.dstProjectMode == 'newProject' && state.dstProjectName.length === 0) ||
+                           (state.dstProjectMode == 'existingProject' && !state.dstProjectId) ||
+                           (state.dstDatasetMode == 'newDataset' && state.dstDatasetName.length === 0) ||
+                           (state.dstDatasetMode == 'existingDataset' && !state.dstDatasetId) ||"
                 @click="data.processing = true; command('process')">
             <i class="zmdi zmdi-play mr5"></i> Start import
         </el-button>
