@@ -88,6 +88,24 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         sly.logger.warn("nothing to download")
         return
 
+    project = None
+    if state["dstProjectMode"] == "newProject":
+        project = api.project.create(workspace_id, state["dstProjectName"], sly.ProjectType.VIDEOS, change_name_if_conflict=True)
+    elif state["dstProjectMode"] == "existingProject":
+        project = api.project.get_info_by_id(state["dstProjectId"])
+    if project is None:
+        sly.logger.error("Result project is None (not found or not created)")
+        return
+
+    dataset = None
+    if state["dstDatasetMode"] == "newDataset":
+        dataset = api.dataset.create(project.id, state["dstDatasetName"], change_name_if_conflict=True)
+    elif state["dstDatasetMode"] == "existingDataset":
+        dataset = api.dataset.get_info_by_id(state["dstDatasetId"])
+    if dataset is None:
+        sly.logger.error("Result dataset is None (not found or not created)")
+        return
+
     progress_items_cb = ui.get_progress_cb(api, task_id, 1, "Importing", len(remote_paths))
     for remote_path, temp_path, local_path in zip(remote_paths, widget_paths, local_paths):
         progress_file_cb = ui.get_progress_cb(api, task_id, 2,
@@ -95,6 +113,17 @@ def process(api: sly.Api, task_id, context, state, app_logger):
                                               file_size[temp_path],
                                               is_size=True)
         api.remote_storage.download_path(remote_path, local_path, progress_file_cb)
+        video_info = sly.video.get_info(local_path)
+
+        video_name = api.video.get_free_name(dataset.id, sly.fs.get_file_name_with_ext(local_path))
+        api.video.upload_paths(dataset.id, [video_name], [local_path], infos=[video_info])
+
+        if state["addMode"] == "addBylink":
+            pass
+        elif state["addMode"] == "copyData":
+            api.video.upload_paths()
+            pass
+
         progress_items_cb(1)
 
     if state["dstProjectMode"] == "newProject":
