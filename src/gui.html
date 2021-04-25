@@ -132,6 +132,14 @@
                 @click="data.processing = true; command('process')">
             <i class="zmdi zmdi-play mr5"></i> Start import
         </el-button>
+        <div v-if="data.progressName1" class="mt10">
+            <div>{{data.progressName1}}: {{data.currentProgressLabel1}} / {{data.totalProgressLabel1}}</div>
+            <el-progress :percentage="Math.round(data.currentProgress1 * 100 / data.totalProgress1)"></el-progress>
+        </div>
+        <div v-if="data.progressName2" class="mt10">
+            <div>{{data.progressName2}}: {{data.currentProgressLabel2}} / {{data.totalProgressLabel2}}</div>
+            <el-progress :percentage="Math.round(data.currentProgress2 * 100 / data.totalProgress2)"></el-progress>
+        </div>
     </sly-card>
 
 </div>

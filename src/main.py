@@ -88,9 +88,14 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         sly.logger.warn("nothing to download")
         return
 
+    progress_items_cb = ui.get_progress_cb(api, task_id, 1, "Importing", len(remote_paths))
     for remote_path, temp_path, local_path in zip(remote_paths, widget_paths, local_paths):
-        progress = sly.Progress("Downloading to temp dir: {!r} ".format(temp_path), file_size[temp_path], is_size=True)
-        api.remote_storage.download_path(remote_path, local_path, progress.iters_done_report)
+        progress_file_cb = ui.get_progress_cb(api, task_id, 2,
+                                              "Downloading to temp dir: {!r} ".format(temp_path),
+                                              file_size[temp_path],
+                                              is_size=True)
+        api.remote_storage.download_path(remote_path, local_path, progress_file_cb)
+        progress_items_cb(1)
 
     if state["dstProjectMode"] == "newProject":
         api.project.create(workspace_id, state[""])
@@ -105,9 +110,11 @@ def main():
     ui.init_context(data, team_id, workspace_id)
     ui.init_connection(data, state)
     ui.init_options(data, state)
+    ui.init_progress(data, state)
 
     app.run(data=data, state=state)
 
+# @TODO: uncommend UI debug values
 #@TODO: filter project - keep only video projects (update widget sly-project-selector)
 #@TODO: add error text if destination dataset/project is not defined
 #@TODO: release new SDK and change ersion in config
