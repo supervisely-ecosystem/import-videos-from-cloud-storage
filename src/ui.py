@@ -53,8 +53,10 @@ def _update_progress_ui(api, task_id, progress: sly.Progress, index):
 
 
 def _update_progress(count, index, api: sly.Api, task_id, progress: sly.Progress):
-    progress.iters_done_report(count)
-    _update_progress_ui(api, task_id, progress, index)
+    progress.iters_done(count)
+    if progress.need_report():
+        progress.report_progress()
+        _update_progress_ui(api, task_id, progress, index)
 
 
 def get_progress_cb(api, task_id, index, message, total, is_size=False):
