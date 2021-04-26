@@ -117,13 +117,11 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         video_name = sly.fs.get_file_name_with_ext(local_path)
         video_name = api.video.get_free_name(dataset.id, video_name)
         if state["addMode"] == "addBylink":
-            api.video.upload_links(dataset.id, [video_name], [remote_path], [video_info])
+            h = sly.fs.get_file_hash(local_path)
+            api.video.upload_links(dataset.id, names=[video_name], hashes=[h], links=[remote_path], infos=[video_info])
         elif state["addMode"] == "copyData":
             api.video.upload_paths(dataset.id, [video_name], [local_path], infos=[video_info])
         progress_items_cb(1)
-
-    if state["dstProjectMode"] == "newProject":
-        api.project.create(workspace_id, state[""])
 
 
 def main():
