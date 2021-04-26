@@ -114,16 +114,12 @@ def process(api: sly.Api, task_id, context, state, app_logger):
                                               is_size=True)
         api.remote_storage.download_path(remote_path, local_path, progress_file_cb)
         video_info = sly.video.get_info(local_path)
-
-        video_name = api.video.get_free_name(dataset.id, sly.fs.get_file_name_with_ext(local_path))
-        api.video.upload_paths(dataset.id, [video_name], [local_path], infos=[video_info])
-
+        video_name = sly.fs.get_file_name_with_ext(local_path)
+        video_name = api.video.get_free_name(dataset.id, video_name)
         if state["addMode"] == "addBylink":
             pass
         elif state["addMode"] == "copyData":
-            api.video.upload_paths()
-            pass
-
+            api.video.upload_paths(dataset.id, [video_name], [local_path], infos=[video_info])
         progress_items_cb(1)
 
     if state["dstProjectMode"] == "newProject":
