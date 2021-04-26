@@ -120,15 +120,19 @@ def process(api: sly.Api, task_id, context, state, app_logger):
             h = sly.fs.get_file_hash(local_path)
             api.video.upload_links(dataset.id, names=[video_name], hashes=[h], links=[remote_path], infos=[video_info])
         elif state["addMode"] == "copyData":
-            # progress_upload = ui.get_progress_cb(api, task_id, 2,
-            #                                      "Uploading to Supervisely: {!r} ".format(temp_path),
-            #                                      file_size[temp_path],
-            #                                      is_size=True)
-            # progress_cb = progress_upload
-            api.video.upload_paths(dataset.id, [video_name], [local_path], infos=[video_info])
+            progress_upload_cb = ui.get_progress_cb(api, task_id, 2,
+                                                    "Uploading to Supervisely: {!r} ".format(temp_path),
+                                                    sly.fs.get_file_size(local_path),  # file_size[temp_path]  #@TODO: file lengths in monitor and in the cloud slightly are different
+                                                    is_size=True,
+                                                    func=ui.set_progress)
+            api.video.upload_paths(dataset.id, [video_name], [local_path], infos=[video_info], item_progress=progress_upload_cb)
         progress_items_cb(1)
 
-    app.show_modal_window(f"{len(remote_paths)} videos has been successfully imported")
+    ui.reset_progress(api, task_id, 1)
+    ui.reset_progress(api, task_id, 2)
+    app.show_modal_window(f"{len(remote_paths)} videos has been successfully imported. You can continue importing other "
+                          f"videos to the same or new project. If you've finished with the app, stop it manually.")
+    api.app.set_field(task_id, "data.processing", False)
 
 
 def main():
@@ -144,9 +148,10 @@ def main():
 
     app.run(data=data, state=state)
 
+
+#@TODO: add loading to buttons
 #@TODO: upload video progress bar
-# @TODO: uncommend UI debug values
-#@TODO: filter project - keep only video projects (update widget sly-project-selector)
+#@TODO: uncommend UI debug values
 #@TODO: add error text if destination dataset/project is not defined
 #@TODO: release new SDK and change ersion in config
 #@TODO: set correct instance_version

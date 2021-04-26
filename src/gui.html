@@ -45,7 +45,7 @@
                           v-model="state.addMode"
                           label="addBylink"
                           style="margin-left: 0;">
-                    Keep file only in the cloud without duplication, add to Supervisely Storage by link
+                    Keep file only in cloud without duplication, add to Supervisely Storage by link
                 </el-radio>
             </div>
         </sly-field>
@@ -75,7 +75,7 @@
                     <sly-select-project
                             :workspace-id="data.workspaceId"
                             :project-id.sync="state.dstProjectId"
-                            :options="{showLabel: false}"
+                            :options="{showLabel: false, availableTypes: ['videos']}"
                     >
                     </sly-select-project>
                 </div>
@@ -123,8 +123,8 @@
         <el-button
                 class="regular mr10" type="primary"
                 style="align-self: flex-end;"
-                :disabled="data.processing === true ||
-                           (state.dstProjectMode === 'newProject' && state.dstProjectName.length === 0) ||
+                :loading="data.processing === true"
+                :disabled="(state.dstProjectMode === 'newProject' && state.dstProjectName.length === 0) ||
                            (state.dstProjectMode === 'existingProject' && !state.dstProjectId) ||
                            (state.dstDatasetMode === 'newDataset' && state.dstDatasetName.length === 0) ||
                            (state.dstDatasetMode === 'existingDataset' && !state.dstDatasetId)
