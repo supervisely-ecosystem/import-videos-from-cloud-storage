@@ -18,15 +18,12 @@ file_size = None
 @app.callback("preview")
 @sly.timeit
 def preview(api: sly.Api, task_id, context, state, app_logger):
+    raise ValueError("123")
     global file_size
     file_size = {}
 
     path = f"{state['provider']}://{state['bucketName']}"
-    try:
-        files = api.remote_storage.list(path)
-    except Exception as e:
-        # @TODO: connection dialog message
-        pass
+    files = api.remote_storage.list(path)
 
     tree_items = []
     for file in files:
@@ -86,7 +83,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
             _add_to_processing_list(path)
 
     if len(local_paths) == 0:
-        #@TODO: show dialog message
+        app.show_modal_window("There are no videos to import", "warning")
         sly.logger.warn("nothing to download")
         return
 
@@ -151,9 +148,9 @@ def main():
 
     app.run(data=data, state=state)
 
-
+#@TODO: error dialog message - app engine - show ui messages, _ignore_errors (if gui exists)
+# try again later or contact technical support
 #@TODO: uncommend UI debug values
-#@TODO: release new SDK and change ersion in config
 #@TODO: set correct instance_version
 # https://docs.supervise.ly/enterprise-edition/advanced-tuning/s3#links-plugin-cloud-providers-support
 if __name__ == "__main__":
