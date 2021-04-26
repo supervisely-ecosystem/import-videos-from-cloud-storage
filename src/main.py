@@ -120,8 +120,15 @@ def process(api: sly.Api, task_id, context, state, app_logger):
             h = sly.fs.get_file_hash(local_path)
             api.video.upload_links(dataset.id, names=[video_name], hashes=[h], links=[remote_path], infos=[video_info])
         elif state["addMode"] == "copyData":
+            # progress_upload = ui.get_progress_cb(api, task_id, 2,
+            #                                      "Uploading to Supervisely: {!r} ".format(temp_path),
+            #                                      file_size[temp_path],
+            #                                      is_size=True)
+            # progress_cb = progress_upload
             api.video.upload_paths(dataset.id, [video_name], [local_path], infos=[video_info])
         progress_items_cb(1)
+
+    app.show_modal_window(f"{len(remote_paths)} videos has been successfully imported")
 
 
 def main():
@@ -137,14 +144,12 @@ def main():
 
     app.run(data=data, state=state)
 
+#@TODO: upload video progress bar
 # @TODO: uncommend UI debug values
 #@TODO: filter project - keep only video projects (update widget sly-project-selector)
 #@TODO: add error text if destination dataset/project is not defined
 #@TODO: release new SDK and change ersion in config
-#@TODO: progres bars
 #@TODO: set correct instance_version
-#@TODO: TONY - fix arguments description in docs remote-storage.bulk.download
-#@TODO: download from cloud API - not working
 # https://docs.supervise.ly/enterprise-edition/advanced-tuning/s3#links-plugin-cloud-providers-support
 if __name__ == "__main__":
     sly.main_wrapper("main", main)
