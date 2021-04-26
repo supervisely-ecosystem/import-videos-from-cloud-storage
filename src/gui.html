@@ -1,4 +1,9 @@
 <div id="import-videos-gcs">
+    <sly-style>
+        #import-videos-gcs .input-label .right-side .text-muted {
+            color: black;
+        }
+    </sly-style>
     <sly-card title="1. Connect to the cloud storage"
               subtitle="Choose cloud service provider and bucket name">
         <div class="fflex">
@@ -71,6 +76,9 @@
             <div class="mt5">
                 <div v-if="state.dstProjectMode === 'newProject'">
                     <el-input placeholder="Please input project name" v-model="state.dstProjectName"></el-input>
+                    <div class="mt5" style="color: #5a6772">
+                        <i>If project with the same name already exists, a new name will be generated automatically</i>
+                    </div>
                 </div>
                 <div v-if="state.dstProjectMode === 'existingProject'">
                     <sly-select-project
@@ -98,6 +106,9 @@
             <div class="mt5">
                 <div v-if="state.dstDatasetMode === 'newDataset'">
                     <el-input placeholder="Please input dataset name" v-model="state.dstDatasetName"></el-input>
+                    <div class="mt5" style="color: #5a6772">
+                        <i>If dataset with the same name already exists, a new name will be generated automatically</i>
+                    </div>
                 </div>
                 <div v-if="state.dstDatasetMode === 'existingDataset'">
                     <sly-select-dataset
