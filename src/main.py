@@ -108,14 +108,16 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         sly.logger.error("Result dataset is None (not found or not created)")
         return
 
-    progress_items_cb = ui.get_progress_cb(api, task_id, 1, "Importing", len(remote_paths))
+    progress_items_cb = ui.get_progress_cb(api, task_id, 1, "Finished", len(remote_paths))
     for remote_path, temp_path, local_path in zip(remote_paths, widget_paths, local_paths):
         progress_file_cb = ui.get_progress_cb(api, task_id, 2,
                                               "Downloading to temp dir: {!r} ".format(temp_path),
                                               file_size[temp_path],
                                               is_size=True)
         api.remote_storage.download_path(remote_path, local_path, progress_file_cb)
+        temp_cb = ui.get_progress_cb(api, task_id, 2, "Processing: {!r} ".format(temp_path), 1, is_size=False, func=ui.set_progress)
         video_info = sly.video.get_info(local_path)
+        temp_cb(1)
         video_name = sly.fs.get_file_name_with_ext(local_path)
         video_name = api.video.get_free_name(dataset.id, video_name)
         if state["addMode"] == "addBylink":
@@ -132,16 +134,15 @@ def process(api: sly.Api, task_id, context, state, app_logger):
 
     ui.reset_progress(api, task_id, 1)
     ui.reset_progress(api, task_id, 2)
-    app.show_modal_window(f"{len(remote_paths)} videos has been successfully imported. You can continue importing other "
-                          f"videos to the same or new project. If you've finished with the app, stop it manually.")
+    app.show_modal_window(f"{len(remote_paths)} videos has been successfully imported to the project \"{project.name}\""
+                          f", dataset \"{dataset.name}\". You can continue importing other videos to the same or new "
+                          f"project. If you've finished with the app, stop it manually.")
     api.app.set_field(task_id, "data.processing", False)
 
 
 def main():
     data = {}
     state = {}
-
-    #sly.fs.clean_dir(app.data_dir)  # @TODO: for debug
 
     ui.init_context(data, team_id, workspace_id)
     ui.init_connection(data, state)

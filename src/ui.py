@@ -62,6 +62,8 @@ def _update_progress_ui(api, task_id, progress: sly.Progress, index):
 
 
 def update_progress(count, index, api: sly.Api, task_id, progress: sly.Progress):
+    # hack slight inaccuracies in size convertion
+    count = min(count, progress.total - progress.current)
     progress.iters_done(count)
     if progress.need_report():
         progress.report_progress()
