@@ -15,8 +15,9 @@
             <el-button
                     class="regular" type="primary"
                     style="align-self: flex-end;"
+                    :loading="data.connecting === true"
                     :disabled="state.bucketName.length === 0 || data.processing === true"
-                    @click="command('preview')">
+                    @click="data.connecting = true; command('preview')">
                 <i class="zmdi zmdi-cloud mr5"></i> Connect
             </el-button>
         </div>
@@ -132,12 +133,26 @@
                 @click="data.processing = true; command('process')">
             <i class="zmdi zmdi-play mr5"></i> Start import
         </el-button>
+        <div class="mt5" v-if="state.dstProjectMode === 'newProject' && state.dstProjectName.length === 0" style="color: red">
+            Please, define the name of a new project
+        </div>
+        <div class="mt5" v-if="state.dstProjectMode === 'existingProject' && !state.dstProjectId" style="color: red">
+            Please, select one of the existing projects
+        </div>
+        <div class="mt5" v-if="state.dstDatasetMode === 'newDataset' && state.dstDatasetName.length === 0" style="color: red">
+            Please, define the name of a new dataset
+        </div>
+        <div class="mt5" v-if="state.dstDatasetMode === 'existingDataset' && !state.dstDatasetId" style="color: red">
+            Please, select one of the existing datasets
+        </div>
+
         <div v-if="data.progressName1" class="mt10">
             <div>{{data.progressName1}}: {{data.currentProgressLabel1}} / {{data.totalProgressLabel1}}</div>
             <el-progress :percentage="Math.round(data.currentProgress1 * 100 / data.totalProgress1)"></el-progress>
         </div>
         <div v-if="data.progressName2" class="mt10">
-            <div>{{data.progressName2}}: <b><span style="color: #20a0ff">{{data.currentProgressLabel2}}</span> / {{data.totalProgressLabel2}}</b></div>
+            <div>{{data.progressName2}}: <b><span style="color: #20a0ff">{{data.currentProgressLabel2}}</span> /
+                {{data.totalProgressLabel2}}</b></div>
             <el-progress :percentage="Math.round(data.currentProgress2 * 100 / data.totalProgress2)"></el-progress>
         </div>
     </sly-card>

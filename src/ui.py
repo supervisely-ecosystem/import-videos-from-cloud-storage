@@ -12,6 +12,7 @@ def init_connection(data, state):
     state["bucketName"] = "remote-img-test"  # "surgar-bigdata-bucket-01"
     state["selected"] = ""
     data["tree"] = None
+    data["connecting"] = False
 
 
 def init_options(data, state):

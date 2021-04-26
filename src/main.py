@@ -1,4 +1,5 @@
 import os
+import time
 from pathlib import Path
 import sys
 import supervisely_lib as sly
@@ -38,6 +39,7 @@ def preview(api: sly.Api, task_id, context, state, app_logger):
 
     fields = [
         {"field": "data.tree", "payload": tree_items},
+        {"field": "data.connecting", "payload": False},
     ]
     api.task.set_fields(task_id, fields)
 
@@ -139,7 +141,7 @@ def main():
     data = {}
     state = {}
 
-    sly.fs.clean_dir(app.data_dir)  # @TODO: for debug
+    #sly.fs.clean_dir(app.data_dir)  # @TODO: for debug
 
     ui.init_context(data, team_id, workspace_id)
     ui.init_connection(data, state)
@@ -149,10 +151,7 @@ def main():
     app.run(data=data, state=state)
 
 
-#@TODO: add loading to buttons
-#@TODO: upload video progress bar
 #@TODO: uncommend UI debug values
-#@TODO: add error text if destination dataset/project is not defined
 #@TODO: release new SDK and change ersion in config
 #@TODO: set correct instance_version
 # https://docs.supervise.ly/enterprise-edition/advanced-tuning/s3#links-plugin-cloud-providers-support
