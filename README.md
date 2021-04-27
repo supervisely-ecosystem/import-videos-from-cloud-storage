@@ -50,10 +50,10 @@ processed, it will be removed from temp directory. This is the one time procedur
 
 Watch short video for more details:
 
-<a data-key="sly-embeded-video-link" href="https://youtu.be/zdjRMb8BlPU" data-video-code="zdjRMb8BlPU">
-    <img src="https://i.imgur.com/ZQPmtfk.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
+<a data-key="sly-embeded-video-link" href="https://youtu.be/20pDcGWxOYo" data-video-code="20pDcGWxOYo">
+    <img src="https://i.imgur.com/Fke5a5R.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:500px;">
 </a>
 
 # Screenshot
 
-<img src="https://i.imgur.com/vQ9hrCI.png"/>
+<img src="https://i.imgur.com/wgsVrYL.png"/>
