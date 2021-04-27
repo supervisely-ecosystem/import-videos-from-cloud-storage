@@ -18,7 +18,6 @@ file_size = None
 @app.callback("preview")
 @sly.timeit
 def preview(api: sly.Api, task_id, context, state, app_logger):
-    raise ValueError("123")
     global file_size
     file_size = {}
 
@@ -148,10 +147,7 @@ def main():
 
     app.run(data=data, state=state)
 
-#@TODO: error dialog message - app engine - show ui messages, _ignore_errors (if gui exists)
-# try again later or contact technical support
-#@TODO: uncommend UI debug values
-#@TODO: set correct instance_version
+
 # https://docs.supervise.ly/enterprise-edition/advanced-tuning/s3#links-plugin-cloud-providers-support
 if __name__ == "__main__":
     sly.main_wrapper("main", main)

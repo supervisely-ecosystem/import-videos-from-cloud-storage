@@ -8,8 +8,8 @@ def init_context(data, team_id, workspace_id):
 
 
 def init_connection(data, state):
-    state["provider"] = "s3"  # "google"
-    state["bucketName"] = "remote-img-test"  # "surgar-bigdata-bucket-01"
+    state["provider"] = "s3"
+    state["bucketName"] = ""  # "remote-img-test"
     state["selected"] = ""
     data["tree"] = None
     data["connecting"] = False

@@ -6,12 +6,12 @@
     "videos"
   ],
   "description": "Import videos from cloud (Google Cloud Storage, Amazon S3, Microsoft Azure, ...)",
-  "docker_image": "supervisely/base-py-sdk:6.1.68",
+  "docker_image": "supervisely/base-py-sdk:6.1.70",
   "main_script": "src/main.py",
   "gui_template": "src/gui.html",
   "task_location": "workspace_tasks",
   "icon": "https://i.imgur.com/dAeEkoO.png",
   "icon_background": "#FFFFFF",
   "disable_stop": true,
-  "instance_version": "6.4.10"
+  "instance_version": "6.4.13"
 }
