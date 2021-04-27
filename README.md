@@ -1,7 +1,7 @@
 <div align="center" markdown>
 <img src="https://i.imgur.com/imzti2w.png"/>
 
-# ImgAug Studio
+# Import videos from cloud storage
 
 <p align="center">
   <a href="#Overview">Overview</a> •
