@@ -134,6 +134,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
                           f", dataset \"{dataset.name}\". You can continue importing other videos to the same or new "
                           f"project. If you've finished with the app, stop it manually.")
     api.app.set_field(task_id, "data.processing", False)
+    api.task.set_output_project(task_id, project.id, project.name)
 
 
 def main():
