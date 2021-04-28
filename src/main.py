@@ -159,7 +159,6 @@ def main():
 
     app.run(data=data, state=state)
 
-#@TODO: remove debug values
-#@TODO: release SDK update
+
 if __name__ == "__main__":
     sly.main_wrapper("main", main)
