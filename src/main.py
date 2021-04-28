@@ -94,6 +94,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     if len(local_paths) == 0:
         app.show_modal_window("There are no videos to import", "warning")
         sly.logger.warn("nothing to download")
+        api.app.set_field(task_id, "data.processing", False)
         return
 
     project = None
@@ -158,6 +159,7 @@ def main():
 
     app.run(data=data, state=state)
 
-
+#@TODO: remove debug values
+#@TODO: release SDK update
 if __name__ == "__main__":
     sly.main_wrapper("main", main)
