@@ -40,7 +40,9 @@ processed, it will be removed from temp directory. This is the one time procedur
 # How To Use
 
 0. Ask your instance administrator to add cloud credentials to instance settings. It can be done both in .env 
-   configuration files or in Admin UI dashboard.
+   configuration files or in Admin UI dashboard. Learn more in docs: [link1](https://docs.supervise.ly/enterprise-edition/installation/post-installation#configure-your-instance), 
+   [link2](https://docs.supervise.ly/enterprise-edition/advanced-tuning/s3#links-plugin-cloud-providers-support). 
+   In case of any questions or issues, please contact tech support.
 1. Add app to your team from Ecosystem
 2. Run app from `Team Apps` Page
 3. Connect to cloud bucket, preview and select files and directories, import selected files to some project/dataset. 
