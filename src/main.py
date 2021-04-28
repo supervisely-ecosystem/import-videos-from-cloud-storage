@@ -22,7 +22,17 @@ def preview(api: sly.Api, task_id, context, state, app_logger):
     file_size = {}
 
     path = f"{state['provider']}://{state['bucketName']}"
-    files = api.remote_storage.list(path)
+    try:
+        files = api.remote_storage.list(path)
+    except Exception as e:
+        app.show_modal_window("Can not find bucket or permission denied. Please, check if provider / bucket name are "
+                              "correct or contact tech support", level="warning")
+        fields = [
+            {"field": "data.tree", "payload": None},
+            {"field": "data.connecting", "payload": False},
+        ]
+        api.task.set_fields(task_id, fields)
+        return
 
     tree_items = []
     for file in files:
@@ -149,6 +159,5 @@ def main():
     app.run(data=data, state=state)
 
 
-# https://docs.supervise.ly/enterprise-edition/advanced-tuning/s3#links-plugin-cloud-providers-support
 if __name__ == "__main__":
     sly.main_wrapper("main", main)
