@@ -110,7 +110,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     if state["dstDatasetMode"] == "newDataset":
         dataset = api.dataset.create(project.id, state["dstDatasetName"], change_name_if_conflict=True)
     elif state["dstDatasetMode"] == "existingDataset":
-        dataset = api.dataset.get_info_by_id(state["dstDatasetId"])
+        dataset = api.dataset.get_info_by_name(project.id, state["selectedDatasetName"])
     if dataset is None:
         sly.logger.error("Result dataset is None (not found or not created)")
         return
