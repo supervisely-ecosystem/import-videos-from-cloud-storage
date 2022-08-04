@@ -1,5 +1,5 @@
 <div align="center" markdown>
-<img src="https://i.imgur.com/imzti2w.png"/>
+<img src="https://user-images.githubusercontent.com/48245050/182814698-bd6dbf08-ad1a-4fbd-b78b-1f872a10ad53.png"/>
 
 # Import videos from cloud storage
 
