@@ -1,5 +1,6 @@
-import supervisely_lib as sly
 from functools import partial
+
+import supervisely as sly
 
 
 def init_context(data, team_id, workspace_id):
@@ -9,7 +10,7 @@ def init_context(data, team_id, workspace_id):
 
 def init_connection(data, state):
     state["provider"] = "s3"
-    state["bucketName"] = "" #"remote-img-test"
+    state["bucketName"] = ""  # "remote-img-test"
     state["selected"] = ""
     data["tree"] = None
     data["connecting"] = False
@@ -58,7 +59,16 @@ def _set_progress(index, api, task_id, message, current_label, total_label, curr
 
 
 def _update_progress_ui(api, task_id, progress: sly.Progress, index):
-    _set_progress(index, api, task_id, progress.message, progress.current_label, progress.total_label, progress.current, progress.total)
+    _set_progress(
+        index,
+        api,
+        task_id,
+        progress.message,
+        progress.current_label,
+        progress.total_label,
+        progress.current,
+        progress.total,
+    )
 
 
 def update_progress(count, index, api: sly.Api, task_id, progress: sly.Progress):
@@ -71,7 +81,7 @@ def update_progress(count, index, api: sly.Api, task_id, progress: sly.Progress)
 
 
 def set_progress(current, index, api: sly.Api, task_id, progress: sly.Progress):
-    #if current > progress.total:
+    # if current > progress.total:
     #    current = progress.total
     old_value = progress.current
     delta = current - old_value

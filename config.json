@@ -1,12 +1,9 @@
 {
   "name": "Import videos from cloud storage",
   "type": "app",
-  "categories": [
-    "import",
-    "videos"
-  ],
+  "categories": ["import", "videos"],
   "description": "Import videos from cloud (Google Cloud Storage, Amazon S3, Microsoft Azure, ...)",
-  "docker_image": "supervisely/base-py-sdk:6.35.0",
+  "docker_image": "supervisely/base-py-sdk:6.69.13",
   "main_script": "src/main.py",
   "gui_template": "src/gui.html",
   "task_location": "workspace_tasks",
