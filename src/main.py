@@ -135,6 +135,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
                 files_cnt += 1
                 if files_cnt % 10000 == 0:
                     sly.logger.info(f"Listing files from remote storage {files_cnt}")
+
         for path in g.FILE_SIZE.keys():
             if path in selected_dirs:
                 continue
@@ -144,6 +145,9 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     # get other selected files
     for path in paths:
         if sly.fs.get_file_ext(path) != "":
+            full_remote_path = f"{state['provider']}://{path.lstrip('/')}"
+            file = api.remote_storage.get_file_info_by_path(path=full_remote_path)
+            g.FILE_SIZE[path] = file["size"]
             _add_to_processing_list(path)
 
     if len(local_paths) == 0:
@@ -197,7 +201,11 @@ def process(api: sly.Api, task_id, context, state, app_logger):
             is_size=False,
             func=ui.set_progress,
         )
-        video_info = sly.video.get_info(local_path)
+        try:
+            video_info = sly.video.get_info(local_path)
+        except Exception as e:
+            raise Exception(f"Couldn't read video info for file: {local_path}. Error: {e}")
+
         temp_cb(1)
         video_name = sly.fs.get_file_name_with_ext(local_path)
         video_name = api.video.get_free_name(dataset.id, video_name)
