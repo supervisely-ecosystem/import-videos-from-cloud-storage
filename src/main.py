@@ -248,6 +248,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
 
 def list_objects(api, full_dir_path):
     start_after = None
+    last_obj = None
     while True:
         remote_objs = api.remote_storage.list(
             path=full_dir_path,
