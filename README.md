@@ -52,9 +52,9 @@ processed, it will be removed from temp directory. This is the one time procedur
 Watch short video for more details:
 
 <a data-key="sly-embeded-video-link" href="https://youtu.be/20pDcGWxOYo" data-video-code="20pDcGWxOYo">
-    <img src="https://i.imgur.com/Fke5a5R.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:500px;">
+    <img src="media/demo.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:500px;">
 </a>
 
 # Screenshot
 
-<img src="https://i.imgur.com/wgsVrYL.png"/>
+<img src="media/scr.png"/>
