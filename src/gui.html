@@ -23,8 +23,8 @@
           <el-option key="fs" label="file system" value="fs"></el-option>
         </el-select>
       </sly-field>
-      <sly-field title="Bucket name" style="flex: 1; margin: 0 10px 0 0">
-        <el-input v-model="state.bucketName" class="mr10"></el-input>
+      <sly-field title="Path" description="Enter name of the root folder or specific path to your data folder on bucket" style="flex: 1; margin: 0 10px 0 0">
+        <el-input v-model="state.bucketName" placeholder="root/data/my_folder" class="mr10"></el-input>
       </sly-field>
       <el-button
         class="regular"
