@@ -40,6 +40,7 @@ def refresh_tree_viewer(api: sly.Api, task_id, context, state, app_logger):
 
     tree_items = []
     for file in files:
+        state["bucketName"] = state["bucketName"].split("/")[0]
         path = os.path.join(f"/{state['bucketName']}", file["prefix"], file["name"])
         tree_items.append({"path": path, "size": file["size"], "type": file["type"]})
         g.FILE_SIZE[path] = file["size"]
@@ -81,6 +82,7 @@ def preview(api: sly.Api, task_id, context, state, app_logger):
 
     tree_items = []
     for file in files:
+        state["bucketName"] = state["bucketName"].split("/")[0]
         path = os.path.join(f"/{state['bucketName']}", file["prefix"], file["name"])
         tree_items.append({"path": path, "size": file["size"], "type": file["type"]})
         g.FILE_SIZE[path] = file["size"]
@@ -130,6 +132,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
                 if file["size"] <= 0:
                     continue
 
+                state['bucketName'] = state['bucketName'].split("/")[0]
                 path = os.path.join(f"/{state['bucketName']}", file["prefix"], file["name"])
                 g.FILE_SIZE[path] = file["size"]
                 files_cnt += 1
@@ -145,10 +148,14 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     # get other selected files
     for path in paths:
         if sly.fs.get_file_ext(path) != "":
-            full_remote_path = f"{state['provider']}://{path.lstrip('/')}"
-            file = api.remote_storage.get_file_info_by_path(path=full_remote_path)
-            g.FILE_SIZE[path] = file["size"]
-            _add_to_processing_list(path)
+            try:
+                full_remote_path = f"{state['provider']}://{path.lstrip('/')}"
+                file = api.remote_storage.get_file_info_by_path(path=full_remote_path)
+                g.FILE_SIZE[path] = file["size"]
+                _add_to_processing_list(path)
+            except FileNotFoundError as e:
+                sly.logger.warn(f"Couldn't find file: {path}")
+                continue
 
     if len(local_paths) == 0:
         g.app.show_modal_window("There are no videos to import", "warning")
@@ -181,6 +188,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         sly.logger.error("Result dataset is None (not found or not created)")
         return
 
+    skipped_videos = 0
     progress_items_cb = ui.get_progress_cb(api, task_id, 1, "Finished", len(remote_paths))
     for remote_path, temp_path, local_path in zip(remote_paths, widget_paths, local_paths):
         progress_file_cb = ui.get_progress_cb(
@@ -204,8 +212,12 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         try:
             video_info = sly.video.get_info(local_path)
         except Exception as e:
-            raise Exception(f"Couldn't read video info for file: {local_path}. Error: {e}")
-
+            sly.logger.warn(f"Couldn't read video info for file: {local_path}. Error: {e}")
+            skipped_videos+=1
+            temp_cb(1)
+            progress_items_cb(1)
+            continue
+        
         temp_cb(1)
         video_name = sly.fs.get_file_name_with_ext(local_path)
         video_name = api.video.get_free_name(dataset.id, video_name)
@@ -238,7 +250,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     ui.reset_progress(api, task_id, 1)
     ui.reset_progress(api, task_id, 2)
     g.app.show_modal_window(
-        f'{len(remote_paths)} videos has been successfully imported to the project "{project.name}"'
+        f'{len(remote_paths)-skipped_videos} videos has been successfully imported to the project "{project.name}"'
         f', dataset "{dataset.name}". You can continue importing other videos to the same or new '
         f"project. If you've finished with the app, stop it manually."
     )
