@@ -6,8 +6,12 @@
     title="1. Connect to the cloud storage"
     subtitle="Choose cloud service provider and bucket name"
   >
-    <div class="fflex" style="align-items:flex-end">
-      <sly-field title="Provider" description="Select provider" style="margin: 0 10px 0 0">
+    <div class="fflex" style="align-items: flex-end">
+      <sly-field
+        title="Provider"
+        description="Select provider"
+        style="margin: 0 10px 0 0"
+      >
         <el-select v-model="state.provider" placeholder="Select cloud provider">
           <el-option
             key="google"
@@ -23,8 +27,16 @@
           <el-option key="fs" label="file system" value="fs"></el-option>
         </el-select>
       </sly-field>
-      <sly-field title="Path" description="Enter the path starting with a bucket name 'bucket_name' to the directory that you want to access" style="flex: 1; margin: 0 10px 0 0">
-        <el-input v-model="state.bucketName" placeholder="bucket_name/data/my_folder" class="mr10"></el-input>
+      <sly-field
+        title="Path"
+        description="Enter the path starting with a bucket name to the directory that you want to access"
+        style="flex: 1; margin: 0 10px 0 0"
+      >
+        <el-input
+          v-model="state.bucketName"
+          placeholder="bucket_name/data/my_folder"
+          class="mr10"
+        ></el-input>
       </sly-field>
       <el-button
         class="regular"

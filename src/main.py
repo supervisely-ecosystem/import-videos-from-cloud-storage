@@ -40,6 +40,7 @@ def refresh_tree_viewer(api: sly.Api, task_id, context, state, app_logger):
 
     tree_items = []
     for file in files:
+        state["bucketName"] = state["bucketName"].split("/")[0]
         path = os.path.join(f"/{state['bucketName']}", file["prefix"], file["name"])
         tree_items.append({"path": path, "size": file["size"], "type": file["type"]})
         g.FILE_SIZE[path] = file["size"]
@@ -81,6 +82,7 @@ def preview(api: sly.Api, task_id, context, state, app_logger):
 
     tree_items = []
     for file in files:
+        state["bucketName"] = state["bucketName"].split("/")[0]
         path = os.path.join(f"/{state['bucketName']}", file["prefix"], file["name"])
         tree_items.append({"path": path, "size": file["size"], "type": file["type"]})
         g.FILE_SIZE[path] = file["size"]
@@ -130,6 +132,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
                 if file["size"] <= 0:
                     continue
 
+                state['bucketName'] = state['bucketName'].split("/")[0]
                 path = os.path.join(f"/{state['bucketName']}", file["prefix"], file["name"])
                 g.FILE_SIZE[path] = file["size"]
                 files_cnt += 1
@@ -145,10 +148,13 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     # get other selected files
     for path in paths:
         if sly.fs.get_file_ext(path) != "":
-            full_remote_path = f"{state['provider']}://{path.lstrip('/')}"
-            file = api.remote_storage.get_file_info_by_path(path=full_remote_path)
-            g.FILE_SIZE[path] = file["size"]
-            _add_to_processing_list(path)
+            try:
+                full_remote_path = f"{state['provider']}://{path.lstrip('/')}"
+                file = api.remote_storage.get_file_info_by_path(path=full_remote_path)
+                g.FILE_SIZE[path] = file["size"]
+                _add_to_processing_list(path)
+            except FileNotFoundError as e:
+                raise FileNotFoundError(f"Couldn't find file: {path}")
 
     if len(local_paths) == 0:
         g.app.show_modal_window("There are no videos to import", "warning")
