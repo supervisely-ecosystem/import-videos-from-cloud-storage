@@ -215,6 +215,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
             sly.logger.warn(f"Couldn't read video info for file: {local_path}. Error: {e}")
             skipped_videos+=1
             temp_cb(1)
+            progress_items_cb(1)
             continue
         
         temp_cb(1)
