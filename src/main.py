@@ -197,7 +197,9 @@ def process(api: sly.Api, task_id, context, state, app_logger):
             sly.fs.get_file_name_with_ext(local_path) for local_path in local_paths_batch
         ]
         if state["addMode"] == "addBylink":
-            api.video.upload_links(dataset.id, links=[remote_paths_batch], names=[video_names])
+            api.video.upload_links(
+                dataset.id, links=[remote_paths_batch], names=[video_names], skip_download=True
+            )
             progress_items_cb(len(remote_paths_batch))
 
         elif state["addMode"] == "copyData":
