@@ -5,6 +5,8 @@ import supervisely as sly
 import globals as g
 import ui
 
+from supervisely.io.fs import get_directory_size
+
 from utils import copy_videos_from_cloud
 
 
@@ -216,7 +218,8 @@ def process(api: sly.Api, task_id, context, state, app_logger):
                 skipped_videos,
             )
             skipped_videos += skipped_videos
-
+    sly.logger.info(f"App data dir: {g.app.data_dir}")
+    sly.logger.info(f"Dir size: {get_directory_size(g.app.data_dir)}")
     ui.reset_progress(api, task_id, 1)
     ui.reset_progress(api, task_id, 2)
     g.app.show_modal_window(
