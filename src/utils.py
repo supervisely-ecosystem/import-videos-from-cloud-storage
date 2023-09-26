@@ -2,6 +2,7 @@ from typing import Callable, List
 import supervisely as sly
 import globals as g
 import ui
+from supervisely.io.fs import silent_remove
 
 
 def copy_videos_from_cloud(
@@ -63,4 +64,5 @@ def copy_videos_from_cloud(
             item_progress=progress_upload_cb,
         )
         progress_items_cb(1)
+        silent_remove(local_path)  # cleanup
     return skipped_videos

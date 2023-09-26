@@ -216,7 +216,6 @@ def process(api: sly.Api, task_id, context, state, app_logger):
                 skipped_videos,
             )
             skipped_videos += skipped_videos
-
     ui.reset_progress(api, task_id, 1)
     ui.reset_progress(api, task_id, 2)
     g.app.show_modal_window(
