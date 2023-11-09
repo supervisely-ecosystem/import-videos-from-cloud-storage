@@ -12,6 +12,8 @@ if sly.is_development():
 app: sly.AppService = sly.AppService()
 app_sources_dir = str(Path(sys.argv[0]).parents[1])
 
+api = sly.Api()
+
 TEAM_ID = int(os.environ["context.teamId"])
 WORKSPACE_ID = int(os.environ["context.workspaceId"])
 
