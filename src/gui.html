@@ -1,12 +1,34 @@
 <div id="import-videos-gcs">
 	<sly-style>
 		#import-videos-gcs .input-label .right-side .text-muted { color: black; }
+		<!-- #import-images-gcs .card .content-wrapper .content { overflow-y: hidden; } -->
 	</sly-style>
 	<sly-card
 		title="1. Connect to the cloud storage"
 		subtitle="Choose cloud service provider and bucket name"
 	>
-		<div class="fflex" style="align-items: flex-end">
+		<sly-notification-2
+			v-if="state.availableProviders.length === 0 || state.unavailableProviders.length > 0"
+			class="mt10"
+			:options="data.notificationBox.options"
+		>
+			<span slot="title"> {{ data.notificationMessage.title }} </span>
+			<div class="fflex">
+				<i
+					class="zmdi zmdi-info mr5"
+					style="color: #3b96ff; flex: none; font-size: 20px"
+				></i>
+
+				<span>
+					{{ data.notificationMessage.description1 }}
+					<a
+						href="https://docs.supervisely.com/enterprise-edition/advanced-tuning/s3#links-plugin-cloud-providers-support"
+						>guide</a
+					>. {{ data.notificationMessage.description2 }}
+				</span>
+			</div>
+		</sly-notification-2>
+		<div class="fflex" style="align-items: flex-end; overflow-y: hidden">
 			<sly-field
 				title="Provider"
 				description="Select provider"
@@ -19,10 +41,11 @@
 					no-data-text="No connected cloud providers"
 				>
 					<el-option
-						v-for="(v, k) in state.availableProviders"
-						:key="k"
-						:label="v"
-						:value="k"
+						v-for="k in state.availableProviders"
+						:key="k.value"
+						:label="k.label"
+						:value="k.value"
+						:disabled="k.disabled"
 					>
 					</el-option>
 				</el-select>
