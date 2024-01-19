@@ -16,7 +16,9 @@ def refresh_tree_viewer(api: sly.Api, task_id, context, state, app_logger):
 
     path = f"{state['provider']}://{new_path.strip('/')}"
     try:
-        files = api.remote_storage.list(path, recursive=False, limit=g.USER_PREVIEW_LIMIT + 1)
+        files = api.remote_storage.list(
+            path, recursive=False, limit=g.USER_PREVIEW_LIMIT + 1
+        )
     except Exception as e:
         sly.logger.warn(repr(e))
         g.app.show_modal_window(
@@ -32,7 +34,11 @@ def refresh_tree_viewer(api: sly.Api, task_id, context, state, app_logger):
         api.task.set_fields(task_id, fields)
         return
 
-    files = [f for f in files if f["type"] == "folder" or (f["type"] == "file" and f["size"] > 0)]
+    files = [
+        f
+        for f in files
+        if f["type"] == "folder" or (f["type"] == "file" and f["size"] > 0)
+    ]
 
     if len(files) > g.USER_PREVIEW_LIMIT:
         files.pop()
@@ -61,7 +67,9 @@ def preview(api: sly.Api, task_id, context, state, app_logger):
 
     path = f"{state['provider']}://{state['bucketName']}"
     try:
-        files = api.remote_storage.list(path, recursive=False, limit=g.USER_PREVIEW_LIMIT + 1)
+        files = api.remote_storage.list(
+            path, recursive=False, limit=g.USER_PREVIEW_LIMIT + 1
+        )
     except Exception as e:
         g.app.show_modal_window(
             "Can not find bucket or permission denied. Please, check if provider / bucket name are "
@@ -75,7 +83,11 @@ def preview(api: sly.Api, task_id, context, state, app_logger):
         api.task.set_fields(task_id, fields)
         return
 
-    files = [f for f in files if f["type"] == "folder" or (f["type"] == "file" and f["size"] > 0)]
+    files = [
+        f
+        for f in files
+        if f["type"] == "folder" or (f["type"] == "file" and f["size"] > 0)
+    ]
     if len(files) > g.USER_PREVIEW_LIMIT:
         files.pop()
         g.app.show_modal_window(
@@ -120,9 +132,9 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     # find selected dirs
     selected_dirs = []
     for path in paths:
-        if sly.fs.get_file_ext(path) == "":
+        if path["type"] == "folder":
             # path to directory
-            selected_dirs.append(path)
+            selected_dirs.append(path["path"])
 
     # get all files from selected dirs
     if len(selected_dirs) > 0:
@@ -135,7 +147,9 @@ def process(api: sly.Api, task_id, context, state, app_logger):
                     continue
 
                 state["bucketName"] = state["bucketName"].split("/")[0]
-                path = os.path.join(f"/{state['bucketName']}", file["prefix"], file["name"])
+                path = os.path.join(
+                    f"/{state['bucketName']}", file["prefix"], file["name"]
+                )
                 g.FILE_SIZE[path] = file["size"]
                 files_cnt += 1
                 if files_cnt % 10000 == 0:
@@ -149,14 +163,14 @@ def process(api: sly.Api, task_id, context, state, app_logger):
 
     # get other selected files
     for path in paths:
-        if sly.fs.get_file_ext(path) != "":
+        if path["type"] == "file":
             try:
-                full_remote_path = f"{state['provider']}://{path.lstrip('/')}"
+                full_remote_path = f"{state['provider']}://{path['path'].lstrip('/')}"
                 file = api.remote_storage.get_file_info_by_path(path=full_remote_path)
-                g.FILE_SIZE[path] = file["size"]
-                _add_to_processing_list(path)
+                g.FILE_SIZE[path["path"]] = file["size"]
+                _add_to_processing_list(path["path"])
             except FileNotFoundError as e:
-                sly.logger.warn(f"Couldn't find file: {path}")
+                sly.logger.warn(f"Couldn't find file: {path['path']}")
                 continue
 
     if len(local_paths) == 0:
@@ -191,16 +205,22 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         return
 
     skipped_videos = 0
-    progress_items_cb = ui.get_progress_cb(api, task_id, 1, "Finished", len(remote_paths))
+    progress_items_cb = ui.get_progress_cb(
+        api, task_id, 1, "Finished", len(remote_paths)
+    )
     for remote_paths_batch, temp_paths_batch, local_paths_batch in zip(
         sly.batched(remote_paths), sly.batched(widget_paths), sly.batched(local_paths)
     ):
         if state["addMode"] == "addBylink":
             video_names = [
-                sly.fs.get_file_name_with_ext(local_path) for local_path in local_paths_batch
+                sly.fs.get_file_name_with_ext(local_path)
+                for local_path in local_paths_batch
             ]
             api.video.upload_links(
-                dataset.id, links=remote_paths_batch, names=video_names, skip_download=True
+                dataset.id,
+                links=remote_paths_batch,
+                names=video_names,
+                skip_download=True,
             )
             progress_items_cb(len(remote_paths_batch))
 
