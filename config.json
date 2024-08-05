@@ -3,13 +3,13 @@
 	"type": "app",
 	"categories": ["import", "videos"],
 	"description": "Import videos from cloud (Google Cloud Storage, Amazon S3, Microsoft Azure, ...)",
-	"docker_image": "supervisely/import-export:6.72.181",
+	"docker_image": "supervisely/import-export:6.73.147",
 	"main_script": "src/main.py",
 	"gui_template": "src/gui.html",
 	"task_location": "workspace_tasks",
 	"icon": "https://i.imgur.com/dAeEkoO.png",
 	"icon_background": "#FFFFFF",
 	"disable_stop": true,
-	"instance_version": "6.8.28",
+	"instance_version": "6.10.0",
 	"poster": "https://user-images.githubusercontent.com/106374579/186632514-667f50f1-c261-4ad2-a24b-c8092419eb31.png"
 }
