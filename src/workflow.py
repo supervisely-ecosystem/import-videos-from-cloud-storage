@@ -10,6 +10,7 @@ def workflow_input(api):
     raise NotImplementedError
 
 def workflow_output(api: sly.Api, id: int, type: Literal["project", "dataset"]):
+    global workflow_processed
     try:
         if workflow_processed:
             sly.logger.debug("Workflow has already been processed for this app run and will be skipped.")
