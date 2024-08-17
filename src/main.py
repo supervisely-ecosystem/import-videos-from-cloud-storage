@@ -205,7 +205,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     if dataset is None:
         sly.logger.error("Result dataset is None (not found or not created)")
         return
-    else:
+    elif state["dstProjectMode"] == "existingProject":
         w.workflow_output(api, dataset.id, type="dataset")
 
     skipped_videos = 0
