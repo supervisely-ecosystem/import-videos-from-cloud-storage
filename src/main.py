@@ -3,6 +3,7 @@ import os
 import supervisely as sly
 
 import globals as g
+import workflow as w
 import ui
 
 from utils import copy_videos_from_cloud
@@ -187,6 +188,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
             sly.ProjectType.VIDEOS,
             change_name_if_conflict=True,
         )
+        w.workflow_output(api, project.id, type="project")
     elif state["dstProjectMode"] == "existingProject":
         project = api.project.get_info_by_id(state["dstProjectId"])
     if project is None:
@@ -203,6 +205,8 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     if dataset is None:
         sly.logger.error("Result dataset is None (not found or not created)")
         return
+    elif state["dstProjectMode"] == "existingProject":
+        w.workflow_output(api, dataset.id, type="dataset")
 
     skipped_videos = 0
     progress_items_cb = ui.get_progress_cb(
@@ -245,7 +249,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     )
     api.app.set_field(task_id, "data.processing", False)
     api.task.set_output_project(task_id, project.id, project.name)
-
+    
 
 def list_objects(api, full_dir_path):
     start_after = None
