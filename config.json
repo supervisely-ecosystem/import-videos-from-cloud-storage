@@ -6,7 +6,7 @@
     "videos"
   ],
   "description": "Import videos from cloud (Google Cloud Storage, Amazon S3, Microsoft Azure, ...)",
-  "docker_image": "supervisely/import-export:6.73.162",
+  "docker_image": "supervisely/import-export:6.73.210",
   "main_script": "src/main.py",
   "gui_template": "src/gui.html",
   "task_location": "workspace_tasks",
