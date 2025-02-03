@@ -60,7 +60,7 @@ def copy_videos_from_cloud(
             dataset.id,
             [video_name],
             [local_path],
-            infos=[video_info],
+            # infos=[video_info],  # nee to check (disabled due to unsafety)
             item_progress=progress_upload_cb,
         )
         progress_items_cb(1)
