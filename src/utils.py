@@ -26,7 +26,7 @@ def copy_videos_from_cloud(
             g.FILE_SIZE[temp_path],
             is_size=True,
         )
-        api.remote_storage.download_path(remote_path, local_path, progress_file_cb)
+        api.remote_storage.download_path(remote_path, local_path, progress_file_cb, team_id=g.TEAM_ID)
         temp_cb = ui.get_progress_cb(
             api,
             task_id,
