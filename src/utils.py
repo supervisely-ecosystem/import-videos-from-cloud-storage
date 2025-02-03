@@ -26,7 +26,7 @@ def copy_videos_from_cloud(
             g.FILE_SIZE[temp_path],
             is_size=True,
         )
-        api.remote_storage.download_path(remote_path, local_path, progress_file_cb)
+        api.remote_storage.download_path(remote_path, local_path, progress_file_cb, team_id=g.TEAM_ID)
         temp_cb = ui.get_progress_cb(
             api,
             task_id,
@@ -60,7 +60,7 @@ def copy_videos_from_cloud(
             dataset.id,
             [video_name],
             [local_path],
-            infos=[video_info],
+            # infos=[video_info],  # nee to check (disabled due to unsafety)
             item_progress=progress_upload_cb,
         )
         progress_items_cb(1)

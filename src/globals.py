@@ -14,8 +14,8 @@ app_sources_dir = str(Path(sys.argv[0]).parents[1])
 
 api = sly.Api()
 
-TEAM_ID = int(os.environ["context.teamId"])
-WORKSPACE_ID = int(os.environ["context.workspaceId"])
+TEAM_ID = sly.env.team_id()
+WORKSPACE_ID = sly.env.workspace_id()
 
 USER_PREVIEW_LIMIT = 100
 FILE_SIZE = None

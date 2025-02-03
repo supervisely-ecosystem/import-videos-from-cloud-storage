@@ -18,7 +18,7 @@ def refresh_tree_viewer(api: sly.Api, task_id, context, state, app_logger):
     path = f"{state['provider']}://{new_path.strip('/')}"
     try:
         files = api.remote_storage.list(
-            path, recursive=False, limit=g.USER_PREVIEW_LIMIT + 1
+            path, recursive=False, limit=g.USER_PREVIEW_LIMIT + 1, team_id=g.TEAM_ID
         )
     except Exception as e:
         sly.logger.warn(repr(e))
@@ -69,7 +69,7 @@ def preview(api: sly.Api, task_id, context, state, app_logger):
     path = f"{state['provider']}://{state['bucketName']}"
     try:
         files = api.remote_storage.list(
-            path, recursive=False, limit=g.USER_PREVIEW_LIMIT + 1
+            path, recursive=False, limit=g.USER_PREVIEW_LIMIT + 1, team_id=g.TEAM_ID
         )
     except Exception as e:
         g.app.show_modal_window(
@@ -167,11 +167,11 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         if path["type"] == "file":
             try:
                 full_remote_path = f"{state['provider']}://{path['path'].lstrip('/')}"
-                file = api.remote_storage.get_file_info_by_path(path=full_remote_path)
+                file = api.remote_storage.get_file_info_by_path(path=full_remote_path, team_id=g.TEAM_ID)
                 g.FILE_SIZE[path["path"]] = file["size"]
                 _add_to_processing_list(path["path"])
             except FileNotFoundError as e:
-                sly.logger.warn(f"Couldn't find file: {path['path']}")
+                sly.logger.warning(f"Couldn't find file: {path['path']}")
                 continue
 
     if len(local_paths) == 0:
@@ -261,6 +261,7 @@ def list_objects(api, full_dir_path):
             folders=False,
             recursive=True,
             start_after=start_after,
+            team_id=g.TEAM_ID,
         )
         if len(remote_objs) == 0:
             break
