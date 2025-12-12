@@ -9,7 +9,7 @@ if sly.is_development():
     load_dotenv(os.path.expanduser("~/supervisely.env"))
     load_dotenv("local.env")
 
-app: sly.AppService = sly.AppService()
+app = sly.AppService()
 app_sources_dir = str(Path(sys.argv[0]).parents[1])
 
 api = sly.Api()
