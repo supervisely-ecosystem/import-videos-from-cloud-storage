@@ -39,3 +39,11 @@ def test_link_mode_into_existing_dataset_with_the_same_name(app):
     assert error is None
     assert api.datasets[70] == ["clip.mp4", "clip_01.mp4"]
     assert api.video.calls == [("links", ["clip_01.mp4"], ["s3://bkt/x/clip.mp4"])]
+
+
+def test_folder_with_empty_name_does_not_import_the_whole_bucket(app):
+    # a key "/a.mp4" makes the viewer show a folder with an empty name: "/bkt/"
+    api = FakeApi({"bkt//a.mp4": 3, "bkt/x/1.mp4": 3, "bkt/y/2.mp4": 3})
+    main, g, error = app(api, make_state([("/bkt/", "folder"), ("/bkt/x/1.mp4", "file")]))
+    assert api.datasets[api.created_datasets[0]] == ["1.mp4"]
+    assert error is not None and "/bkt/" in str(error)
