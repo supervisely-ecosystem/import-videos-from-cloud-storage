@@ -119,8 +119,13 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     widget_paths = []
     local_paths = []
 
+    added_paths = set()
+
     def _add_to_processing_list(path):
         nonlocal remote_paths, local_paths
+        if path in added_paths:  # a file selected both directly and inside a selected folder
+            return
+        added_paths.add(path)
         if sly.video.has_valid_ext(path) is False:
             sly.logger.warning(f"Unsupported video extension for path: {path}")
             return
@@ -210,6 +215,10 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     elif state["dstProjectMode"] == "existingProject":
         w.workflow_output(api, dataset.id, type="dataset")
 
+    used_names = set()
+    if state["addMode"] == "addBylink":
+        used_names = {info.name for info in api.video.get_list(dataset.id)}
+
     skipped_videos = 0
     progress_items_cb = ui.get_progress_cb(
         api, task_id, 1, "Finished", len(remote_paths)
@@ -218,7 +227,10 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         sly.batched(remote_paths), sly.batched(widget_paths), sly.batched(local_paths)
     ):
         if state["addMode"] == "addBylink":
-            video_names = [posixpath.basename(path) for path in temp_paths_batch]
+            # names must be unique in the dataset: "a/clip.mp4" and "b/clip.mp4" -> clip, clip_01
+            video_names = [
+                free_name(used_names, posixpath.basename(path)) for path in temp_paths_batch
+            ]
             api.video.upload_links(
                 dataset.id,
                 links=remote_paths_batch,
@@ -258,6 +270,18 @@ def safe_local_path(data_dir: str, index: int, remote_path: str) -> str:
     local_path = os.path.join(data_dir, "downloads", f"{index:08d}{ext}")
     sly.fs.ensure_base_path(local_path)
     return local_path
+
+
+def free_name(used_names: set, name: str) -> str:
+    """`name`, or `name_01.ext`, `name_02.ext`, ... if taken; adds the result to `used_names`."""
+    res = name
+    suffix = 1
+    stem, ext = sly.fs.get_file_name(name), sly.fs.get_file_ext(name)
+    while res in used_names:
+        res = f"{stem}_{suffix:02d}{ext}"
+        suffix += 1
+    used_names.add(res)
+    return res
 
 
 def list_objects(api, full_dir_path):
