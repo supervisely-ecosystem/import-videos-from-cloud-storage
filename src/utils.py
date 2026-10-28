@@ -1,9 +1,11 @@
 import posixpath
-from typing import Callable, List
+from typing import Callable, List, Tuple
+
 import supervisely as sly
+from supervisely.io.fs import silent_remove
+
 import globals as g
 import ui
-from supervisely.io.fs import silent_remove
 
 
 def copy_videos_from_cloud(
@@ -14,8 +16,12 @@ def copy_videos_from_cloud(
     temp_paths_batch: List[str],
     local_paths_batch: List[str],
     progress_items_cb: Callable,
-    skipped_videos: int = 0,
-):
+    failed: List[Tuple[str, str]],
+) -> int:
+    """Downloads and uploads the videos one by one. A video that fails (download error, unreadable
+    video, upload error or dropped by the server) is recorded in `failed` and the rest continues.
+    Returns the number of imported videos."""
+    imported = 0
     for remote_path, temp_path, local_path in zip(
         remote_paths_batch, temp_paths_batch, local_paths_batch
     ):
@@ -31,15 +37,22 @@ def copy_videos_from_cloud(
             api.remote_storage.download_path(
                 remote_path, local_path, progress_file_cb, team_id=g.TEAM_ID
             )
-            skipped_videos = _upload_video(
-                api, task_id, dataset, temp_path, local_path, progress_items_cb, skipped_videos
-            )
+            reason = _upload_video(api, task_id, dataset, temp_path, local_path)
+        except Exception as e:
+            reason = repr(e)
         finally:
             silent_remove(local_path)  # cleanup, also when the video failed
-    return skipped_videos
+        if reason is None:
+            imported += 1
+        else:
+            sly.logger.warning(f"Failed to import {temp_path!r}: {reason}")
+            failed.append((temp_path, reason))
+        progress_items_cb(1)
+    return imported
 
 
-def _upload_video(api, task_id, dataset, temp_path, local_path, progress_items_cb, skipped_videos):
+def _upload_video(api, task_id, dataset, temp_path, local_path):
+    """Returns None when the video is imported, else the reason it was not."""
     temp_cb = ui.get_progress_cb(
         api,
         task_id,
@@ -50,13 +63,10 @@ def _upload_video(api, task_id, dataset, temp_path, local_path, progress_items_c
         func=ui.set_progress,
     )
     try:
-        video_info = sly.video.get_info(local_path)
+        sly.video.get_info(local_path)
     except Exception as e:
-        sly.logger.warn(f"Couldn't read video info for file: {temp_path}. Error: {e}")
-        skipped_videos += 1
         temp_cb(1)
-        progress_items_cb(1)
-        return skipped_videos
+        return f"not a readable video: {e}"
     temp_cb(1)
     video_name = posixpath.basename(temp_path)
     video_name = api.video.get_free_name(dataset.id, video_name)
@@ -69,12 +79,14 @@ def _upload_video(api, task_id, dataset, temp_path, local_path, progress_items_c
         is_size=True,
         func=ui.set_progress,
     )
-    api.video.upload_paths(
+    infos = api.video.upload_paths(
         dataset.id,
         [video_name],
         [local_path],
-        # infos=[video_info],  # nee to check (disabled due to unsafety)
         item_progress=progress_upload_cb,
     )
-    progress_items_cb(1)
-    return skipped_videos
+    if not infos:
+        # VideoApi.upload_paths logs "File skipped ..." and returns nothing when the server
+        # fails to process the video
+        return "the server could not process the video (see 'File skipped' in the app log)"
+    return None
