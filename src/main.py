@@ -1,4 +1,5 @@
 import os
+import posixpath
 
 import supervisely as sly
 
@@ -126,8 +127,9 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         full_remote_path = f"{state['provider']}://{path.lstrip('/')}"
         remote_paths.append(full_remote_path)
         widget_paths.append(path)
-        local_path = os.path.join(g.app.data_dir, path.lstrip("/"))
-        sly.fs.ensure_base_path(local_path)
+        # Bucket keys may contain "..", or be longer than a local file name may be:
+        # the local copy gets a name of its own inside the app temp dir.
+        local_path = safe_local_path(g.app.data_dir, len(local_paths), path)
         local_paths.append(local_path)
 
     # find selected dirs
@@ -216,10 +218,7 @@ def process(api: sly.Api, task_id, context, state, app_logger):
         sly.batched(remote_paths), sly.batched(widget_paths), sly.batched(local_paths)
     ):
         if state["addMode"] == "addBylink":
-            video_names = [
-                sly.fs.get_file_name_with_ext(local_path)
-                for local_path in local_paths_batch
-            ]
+            video_names = [posixpath.basename(path) for path in temp_paths_batch]
             api.video.upload_links(
                 dataset.id,
                 links=remote_paths_batch,
@@ -250,6 +249,16 @@ def process(api: sly.Api, task_id, context, state, app_logger):
     api.app.set_field(task_id, "data.processing", False)
     api.task.set_output_project(task_id, project.id, project.name)
     
+
+def safe_local_path(data_dir: str, index: int, remote_path: str) -> str:
+    """Local download path for a remote file: always directly inside `data_dir/downloads`."""
+    ext = sly.fs.get_file_ext(posixpath.basename(remote_path))
+    if len(ext) > 16 or "/" in ext or "\\" in ext:
+        ext = ""
+    local_path = os.path.join(data_dir, "downloads", f"{index:08d}{ext}")
+    sly.fs.ensure_base_path(local_path)
+    return local_path
+
 
 def list_objects(api, full_dir_path):
     start_after = None

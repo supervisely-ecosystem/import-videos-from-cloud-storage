@@ -1,3 +1,4 @@
+import posixpath
 from typing import Callable, List
 import supervisely as sly
 import globals as g
@@ -26,43 +27,54 @@ def copy_videos_from_cloud(
             g.FILE_SIZE[temp_path],
             is_size=True,
         )
-        api.remote_storage.download_path(remote_path, local_path, progress_file_cb, team_id=g.TEAM_ID)
-        temp_cb = ui.get_progress_cb(
-            api,
-            task_id,
-            2,
-            "Processing: {!r} ".format(temp_path),
-            1,
-            is_size=False,
-            func=ui.set_progress,
-        )
         try:
-            video_info = sly.video.get_info(local_path)
-        except Exception as e:
-            sly.logger.warn(f"Couldn't read video info for file: {local_path}. Error: {e}")
-            skipped_videos += 1
-            temp_cb(1)
-            progress_items_cb(1)
-            continue
+            api.remote_storage.download_path(
+                remote_path, local_path, progress_file_cb, team_id=g.TEAM_ID
+            )
+            skipped_videos = _upload_video(
+                api, task_id, dataset, temp_path, local_path, progress_items_cb, skipped_videos
+            )
+        finally:
+            silent_remove(local_path)  # cleanup, also when the video failed
+    return skipped_videos
+
+
+def _upload_video(api, task_id, dataset, temp_path, local_path, progress_items_cb, skipped_videos):
+    temp_cb = ui.get_progress_cb(
+        api,
+        task_id,
+        2,
+        "Processing: {!r} ".format(temp_path),
+        1,
+        is_size=False,
+        func=ui.set_progress,
+    )
+    try:
+        video_info = sly.video.get_info(local_path)
+    except Exception as e:
+        sly.logger.warn(f"Couldn't read video info for file: {temp_path}. Error: {e}")
+        skipped_videos += 1
         temp_cb(1)
-        video_name = sly.fs.get_file_name_with_ext(local_path)
-        video_name = api.video.get_free_name(dataset.id, video_name)
-        progress_upload_cb = ui.get_progress_cb(
-            api,
-            task_id,
-            2,
-            "Uploading to Supervisely: {!r} ".format(temp_path),
-            sly.fs.get_file_size(local_path),
-            is_size=True,
-            func=ui.set_progress,
-        )
-        api.video.upload_paths(
-            dataset.id,
-            [video_name],
-            [local_path],
-            # infos=[video_info],  # nee to check (disabled due to unsafety)
-            item_progress=progress_upload_cb,
-        )
         progress_items_cb(1)
-        silent_remove(local_path)  # cleanup
+        return skipped_videos
+    temp_cb(1)
+    video_name = posixpath.basename(temp_path)
+    video_name = api.video.get_free_name(dataset.id, video_name)
+    progress_upload_cb = ui.get_progress_cb(
+        api,
+        task_id,
+        2,
+        "Uploading to Supervisely: {!r} ".format(temp_path),
+        sly.fs.get_file_size(local_path),
+        is_size=True,
+        func=ui.set_progress,
+    )
+    api.video.upload_paths(
+        dataset.id,
+        [video_name],
+        [local_path],
+        # infos=[video_info],  # nee to check (disabled due to unsafety)
+        item_progress=progress_upload_cb,
+    )
+    progress_items_cb(1)
     return skipped_videos
