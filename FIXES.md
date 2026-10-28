@@ -105,3 +105,11 @@ the projects the checks create afterwards.
 | 6 | A folder with one valid and one broken `.mp4` (no such folder on dev; needs a test object uploaded by the coordinator) | 1 imported, error "1 of 2 videos failed", task error | "0 videos has been successfully imported" (1 is), task success |
 | 7 | Only the broken `.mp4` of case 6 | "No videos were imported", no project left, task error | "-1 videos has been successfully imported", empty project as output |
 | 8 | `remote-img-test`; select the blank-named folder at the top and one file from `demo_videos` | 1 imported, error naming `/remote-img-test/` | **do not run**: imports every video in the bucket |
+
+## Branch image (test tag)
+
+On this branch `config.json` uses `supervisely/import-videos-from-cloud-storage:test-f5c839ed`. `release_branch.yml` follows
+`workflows/templates/build_release_branch.yml`: on push it builds that tag, named by the sha256 of
+`dev_requirements.txt`, and only if the tag is not on Docker Hub yet. Dev agents pull images "if not present", so
+every dependency change gets a new tag. **Before merging, set `docker_image` back to `supervisely/import-videos-from-cloud-storage:6.74.34`**; `release.yml`
+builds that tag on the version release.
